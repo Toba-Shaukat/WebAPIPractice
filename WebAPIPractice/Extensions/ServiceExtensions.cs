@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Contracts;
+using LoggerService;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace WebAPIPractice.Extensions
@@ -15,6 +17,10 @@ namespace WebAPIPractice.Extensions
         public static void ConfigureIISIntegration(this IServiceCollection services)
         {
             services.Configure<IISOptions>(options => { });
+        }
+        public static void ConfigureLoggerService(this IServiceCollection services)
+        {
+            services.AddScoped<ILoggerManager, LoggerManager>();
         }
     }
 }
