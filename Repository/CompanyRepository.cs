@@ -1,6 +1,8 @@
 ﻿using Contracts;
 using Entities.Context;
 using Entities.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Repository
 {
@@ -11,5 +13,10 @@ namespace Repository
 
         }
 
+        public IEnumerable<Company> GetAllCompanies(bool trackChanges)
+        {
+            var companies = GetAll(trackChanges).ToList();
+            return companies;
+        }
     }
 }

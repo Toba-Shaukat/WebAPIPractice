@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Context;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
 
@@ -23,10 +24,16 @@ namespace Repository
 
         //IEnumerable: processing will happen in the memory
         //IQueryable: processing wil happen in the database
-        public IQueryable<TModel> GetAll()
+        public IQueryable<TModel> GetAll(bool trackChanges)
         {
             var data = _context.Set<TModel>().AsQueryable();
-            return data;
+
+            if (trackChanges)
+            {
+                return data;
+            }
+
+            return data.AsNoTracking();
         }
 
         public TModel GetById(int id)

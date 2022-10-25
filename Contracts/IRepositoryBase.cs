@@ -10,7 +10,7 @@ namespace Contracts
     {
         void Add(TModel model);
         void Update(TModel model);
-        IQueryable<TModel> GetAll();
+        IQueryable<TModel> GetAll(bool trackChanges);
         TModel GetById(int id);
         void Remove(TModel model);
         void RemoveById(int id);
