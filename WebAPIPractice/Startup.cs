@@ -33,6 +33,8 @@ namespace WebAPIPractice
             services.ConfigureCors();
             services.ConfigureIISIntegration();
             services.ConfigureLoggerService();
+            services.ConfigureSqlContext(Configuration);
+            services.ConfigureRepositoryManager();
             services.AddControllers();
             //services.AddSwaggerGen(c =>
             //{
