@@ -55,6 +55,7 @@ namespace WebAPIPractice
                 //app.UseSwagger();
                 //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIPractice v1"));
             }
+            // test
             app.ConfigureExceptionHandler(logger);
             app.UseHttpsRedirection();
 
