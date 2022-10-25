@@ -4,6 +4,7 @@ using Entities.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Repository
 {
@@ -56,6 +57,28 @@ namespace Repository
         public void Update(TModel model)
         {
             _context.Set<TModel>().Update(model);
+        }
+
+        public IQueryable<TModel> FindAll(bool trackChanges)
+        {
+            var data = _context.Set<TModel>().AsQueryable();
+
+            if (trackChanges)
+            {
+                return data;
+            }
+
+            return data.AsNoTracking();
+        }
+
+        public IQueryable<TModel> FindByCondition(Expression<Func<TModel, bool>> expression, bool trackChanges)
+        {
+            if (!trackChanges)
+            {
+                return _context.Set<TModel>().Where(expression).AsNoTracking();
+            }
+
+            return _context.Set<TModel>().Where(expression);
         }
     }
 }
