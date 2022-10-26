@@ -40,6 +40,12 @@ namespace WebAPIPractice
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers();
+            // for csv and XML format
+            //services.AddControllers(config =>
+            //{
+            //    config.RespectBrowserAcceptHeader = true;
+            //    config.ReturnHttpNotAcceptable = true; //406 not acceptable
+            //}).AddXmlDataContractSerializerFormatters().AddCustomCSVFormatter();
             //services.AddSwaggerGen(c =>
             //{
             //    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIPractice", Version = "v1" });
