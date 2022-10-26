@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 //using Entities.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -58,6 +59,22 @@ namespace AWebAPIPractice.Controllers
                 return Ok(companyDto);
             }
         }
+        [HttpPost]
+        public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+        {
+            if (company == null)
+            {
+                _loggerManager.LogError("CompanyForCreationDto object sent from client is null");
+                return BadRequest("CompanyForCreationDto object is null");
+            }
 
+            var companyEntity = _mapper.Map<Company>(company);
+
+            _repositoryManager.CompanyRepository.CreateCompany(companyEntity);
+            _repositoryManager.Save();
+
+            return Created("", "Company Added"); //201
+
+        }
     }
 }

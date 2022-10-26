@@ -16,7 +16,11 @@ namespace Repository
         {
             return FindByCondition(e => e.CompanyId == companyId && e.Id == id, trackChanges).SingleOrDefault();
         }
-
+        public void CreateEmployeeForCompany(int companyId, Employee employee)
+        {
+            employee.CompanyId = companyId;
+            Add(employee);
+        }
         public IEnumerable<Employee> GetEmployees(int companyId, bool trackChanges)
         {
             return FindByCondition(e => e.CompanyId == companyId, trackChanges).OrderBy(e => e.Name).ToList();

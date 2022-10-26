@@ -22,6 +22,11 @@ namespace Repository
         public Company GetCompany(int companyId, bool trackChanges)
         {
             return FindByCondition(c => c.Id == companyId, trackChanges).SingleOrDefault();
+
+        }
+        public void CreateCompany(Company company)
+        {
+            Add(company);
         }
     }
 }
