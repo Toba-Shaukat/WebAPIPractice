@@ -21,6 +21,11 @@ namespace Repository
             employee.CompanyId = companyId;
             Add(employee);
         }
+
+        public void DeleteEmployee(Employee employee)
+        {
+            Remove(employee);
+        }
         public IEnumerable<Employee> GetEmployees(int companyId, bool trackChanges)
         {
             return FindByCondition(e => e.CompanyId == companyId, trackChanges).OrderBy(e => e.Name).ToList();

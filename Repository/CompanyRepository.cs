@@ -28,5 +28,9 @@ namespace Repository
         {
             Add(company);
         }
+        public void DeleteCompany(Company company)
+        {
+            Remove(company);
+        }
     }
 }

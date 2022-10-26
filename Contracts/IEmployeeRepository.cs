@@ -12,5 +12,7 @@ namespace Contracts
         IEnumerable<Employee> GetEmployees(int companyId, bool trackChanges);
         Employee GetEmployee(int companyId, int id, bool trackChanges);
         void CreateEmployeeForCompany(int companyId, Employee employee);
+
+        void DeleteEmployee(Employee employee);
     }
 }

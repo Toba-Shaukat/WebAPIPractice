@@ -76,5 +76,65 @@ namespace AWebAPIPractice.Controllers
             return Created("", "Company Added"); //201
 
         }
+        [HttpPost("collection")]
+        public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+        {
+            if (companyCollection == null)
+            {
+                _loggerManager.LogError("CompanyForCreationDto object sent from client is null");
+                return BadRequest("CompanyForCreationDto object is null");
+            }
+
+            var companies = _mapper.Map<IEnumerable<Company>>(companyCollection);
+
+            foreach (var company in companies)
+            {
+                _repositoryManager.CompanyRepository.CreateCompany(company); //insert
+            }
+
+            _repositoryManager.Save();
+
+            return Created("", "All Companies Added"); //201
+
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCompany(int id)
+        {
+            var company = _repositoryManager.CompanyRepository.GetCompany(id, trackChanges: false);
+
+            if (company == null)
+            {
+                _loggerManager.LogInfo($"Company with Id: {id} doesn't exist in the database");
+                return NotFound();
+            }
+
+            _repositoryManager.CompanyRepository.DeleteCompany(company);
+            _repositoryManager.Save();
+
+            return NoContent();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateCompany(int id, [FromBody] CompanyForUpdateDto companyDto)
+        {
+            if (companyDto == null)
+            {
+                _loggerManager.LogError("CompanyForUpdateDto object sent from client is null.");
+                return BadRequest("CompanyForUpdateDto object is null");
+            }
+
+            var companyEntity = _repositoryManager.CompanyRepository.GetCompany(id, trackChanges: true);
+            if (companyEntity == null)
+            {
+                _loggerManager.LogInfo($"Company with id: {id} doesn't exist in the database.");
+                return NotFound();
+            }
+
+            _mapper.Map(companyDto, companyEntity);
+            _repositoryManager.Save();
+
+            return NoContent();
+        }
     }
 }

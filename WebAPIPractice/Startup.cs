@@ -39,7 +39,7 @@ namespace WebAPIPractice
             services.ConfigureRepositoryManager();
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             // for csv and XML format
             //services.AddControllers(config =>
             //{
