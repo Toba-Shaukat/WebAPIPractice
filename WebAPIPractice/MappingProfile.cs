@@ -11,6 +11,7 @@ namespace AWebAPIPractice
             //CreateMap<T,T>
             CreateMap<Company, CompanyDto>()
                 .ForMember(x => x.FullAddress, options => options.MapFrom(x => string.Join(' ', x.Address, x.Country)));
+            CreateMap<Employee, EmployeeDto>();
         }
     }
 }

@@ -58,5 +58,6 @@ namespace AWebAPIPractice.Controllers
                 return Ok(companyDto);
             }
         }
+
     }
 }
