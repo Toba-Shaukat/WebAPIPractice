@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AWebAPIPractice.ActionFilters;
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
@@ -112,15 +113,10 @@ namespace AWebAPIPractice.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
         public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = await _repositoryManager.CompanyRepository.GetCompanyAsync(id, trackChanges: false);
-
-            if (company == null)
-            {
-                _loggerManager.LogInfo($"Company with Id: {id} doesn't exist in the database");
-                return NotFound();
-            }
+            var company = HttpContext.Items["company"] as Company;
 
             _repositoryManager.CompanyRepository.DeleteCompany(company);
             await _repositoryManager.SaveAsync();
@@ -129,20 +125,11 @@ namespace AWebAPIPractice.Controllers
         }
 
         [HttpPut("{id}")]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [ServiceFilter(typeof(ValidateCompanyExistsAttribute))]
         public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyForUpdateDto companyDto)
         {
-            if (companyDto == null)
-            {
-                _loggerManager.LogError("CompanyForUpdateDto object sent from client is null.");
-                return BadRequest("CompanyForUpdateDto object is null");
-            }
-
-            var companyEntity = await _repositoryManager.CompanyRepository.GetCompanyAsync(id, trackChanges: true);
-            if (companyEntity == null)
-            {
-                _loggerManager.LogInfo($"Company with id: {id} doesn't exist in the database.");
-                return NotFound();
-            }
+            var companyEntity = HttpContext.Items["company"] as Company;
 
             _mapper.Map(companyDto, companyEntity);
             await _repositoryManager.SaveAsync();

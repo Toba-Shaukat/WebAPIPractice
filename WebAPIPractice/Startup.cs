@@ -1,4 +1,5 @@
 using AWebAPIPractice;
+using AWebAPIPractice.ActionFilters;
 using AWebAPIPractice.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.Builder;
@@ -46,6 +47,10 @@ namespace WebAPIPractice
                 options.SuppressModelStateInvalidFilter = true;
             });
             services.AddControllers().AddNewtonsoftJson();
+
+            //register action filters
+            services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped<ValidateCompanyExistsAttribute>();
             // for csv and XML format
             //services.AddControllers(config =>
             //{

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AWebAPIPractice.ActionFilters;
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
@@ -67,6 +68,7 @@ namespace AWebAPIPractice.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {
             if (employee == null)
