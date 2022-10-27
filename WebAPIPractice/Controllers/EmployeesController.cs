@@ -1,12 +1,15 @@
-﻿using AutoMapper;
+﻿using AWebAPIPractice.ActionFilters;
+using AutoMapper;
 using AWebAPIPractice.ActionFilters;
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Entities.RequestFeatures;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AWebAPIPractice.Controllers
@@ -14,6 +17,7 @@ namespace AWebAPIPractice.Controllers
     //this a route for companies and employees both
     [Route("api/companies/{companyId}/employees")]
     [ApiController]
+    [ApiVersion("1.0")]
     public class EmployeesController : ControllerBase
     {
         private readonly IRepositoryManager _repositoryManager;
@@ -28,8 +32,11 @@ namespace AWebAPIPractice.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEmployeesForCompany(int companyId)
+        public async Task<IActionResult> GetEmployeesForCompany(int companyId, [FromQuery] EmployeeParameters employeeParameters)
         {
+            if (!employeeParameters.ValidRange)
+                return BadRequest("Max age can't be less than min age");
+
             var company = await _repositoryManager.CompanyRepository.GetCompanyAsync(companyId, trackChanges: false);
 
             if (company == null)
@@ -38,7 +45,9 @@ namespace AWebAPIPractice.Controllers
                 return NotFound();
             }
 
-            var employeesFromDb = await _repositoryManager.EmployeeRepository.GetEmployeesAsync(companyId, trackChanges: false);
+            var employeesFromDb = await _repositoryManager.EmployeeRepository.GetEmployeesAsync(companyId, employeeParameters, trackChanges: false);
+
+            Response.Headers.Add("X-Tim-Pagination", JsonSerializer.Serialize(employeesFromDb.MetaData));
 
             var employeeDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
             return Ok(employeeDto);
@@ -71,17 +80,17 @@ namespace AWebAPIPractice.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> CreateEmployeeForCompany(int companyId, [FromBody] EmployeeForCreationDto employee)
         {
-            if (employee == null)
-            {
-                _loggerManager.LogError("EmployeeForCreationDto object sent from client is null.");
-                return BadRequest("EmployeeForCreationDto object is null");
-            }
+            //if (employee == null)
+            //{
+            //    _loggerManager.LogError("EmployeeForCreationDto object sent from client is null.");
+            //    return BadRequest("EmployeeForCreationDto object is null");
+            //}
 
-            if (!ModelState.IsValid)
-            {
-                _loggerManager.LogError("Invalid model state for the EmployeeForCreationDto object");
-                return UnprocessableEntity(ModelState);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    _loggerManager.LogError("Invalid model state for the EmployeeForCreationDto object");
+            //    return UnprocessableEntity(ModelState);
+            //}
 
 
             var company = await _repositoryManager.CompanyRepository.GetCompanyAsync(companyId, trackChanges: false);

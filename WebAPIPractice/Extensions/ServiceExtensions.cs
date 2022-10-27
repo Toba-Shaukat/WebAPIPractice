@@ -1,8 +1,11 @@
 ﻿using AWebAPIPractice;
+using AWebAPIPractice.Controllers;
 using Contracts;
 using Entities.Context;
 using LoggerService;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +45,18 @@ namespace WebAPIPractice.Extensions
         public static IMvcBuilder AddCustomCSVFormatter(this IMvcBuilder mvcBuilder)
         {
             return mvcBuilder.AddMvcOptions(config => config.OutputFormatters.Add(new CsvOutputFormatter()));
+        }
+        public static void ConfigureVersioning(this IServiceCollection services)
+        {
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true; //api/employees 
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ApiVersionReader = new HeaderApiVersionReader("arvinder-api-version");
+                options.Conventions.Controller<CompaniesController>().HasApiVersion(new ApiVersion(1, 0));
+                options.Conventions.Controller<CompaniesV2Controller>().HasDeprecatedApiVersion(new ApiVersion(2, 0));
+            });
         }
     }
 }

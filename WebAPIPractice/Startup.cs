@@ -51,6 +51,7 @@ namespace WebAPIPractice
             //register action filters
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<ValidateCompanyExistsAttribute>();
+            services.ConfigureVersioning();
             // for csv and XML format
             //services.AddControllers(config =>
             //{
