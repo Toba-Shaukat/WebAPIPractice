@@ -1,3 +1,4 @@
+using AWebAPIPractice;
 using AWebAPIPractice.Extensions;
 using Contracts;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +39,12 @@ namespace WebAPIPractice
             services.ConfigureSqlContext(Configuration);
             services.ConfigureRepositoryManager();
             services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<ITestConfig, TestConfig>();
 
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
             services.AddControllers().AddNewtonsoftJson();
             // for csv and XML format
             //services.AddControllers(config =>
