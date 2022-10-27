@@ -2,14 +2,15 @@
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
-//using Entities.DataTransferObjects;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AWebAPIPractice.Controllers
 {
+    //api/companies/collection POST
     [Route("api/companies")]
     [ApiController]
     public class CompaniesController : ControllerBase
@@ -27,26 +28,35 @@ namespace AWebAPIPractice.Controllers
 
         //get: api/companies
         [HttpGet]
-        public IActionResult GetCompanies()
+        public async Task<IActionResult> GetCompanies()
         {
-            try
-            {
-              var companies = _repositoryManager.CompanyRepository.GetAllCompanies(trackChanges: false);
+            //    try
+            //    {
+            //        var companies = _repositoryManager.CompanyRepository.GetAllCompanies(trackChanges: false);
 
-               var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+            //        var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
 
-                return Ok(companiesDto);
-            }
-            catch(Exception ex)
-            {
-                _loggerManager.LogError($"Something went wrong in the {nameof(GetCompanies)} actions {ex}");
-                return StatusCode(500, "Internal Server Error");
-            }
+            //        return Ok(companiesDto);
+            //    }
+            //    catch(Exception ex)
+            //    {
+            //        _loggerManager.LogError($"Something went wrong in the {nameof(GetCompanies)} actions {ex}");
+            //        return StatusCode(500, "Internal Server Error");
+            //    }
+
+            var companies = await _repositoryManager.CompanyRepository.GetAllCompaniesAsync(trackChanges: false);
+
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+
+            //throw new Exception("sdsd");
+
+            return Ok(companiesDto);
         }
+
         [HttpGet("{id}")]
-        public IActionResult GetCompany(int id)
+        public async Task<IActionResult> GetCompany(int id)
         {
-            var company = _repositoryManager.CompanyRepository.GetCompany(id, trackChanges: false);
+            var company = await _repositoryManager.CompanyRepository.GetCompanyAsync(id, trackChanges: false);
 
             if (company == null)
             {
@@ -59,8 +69,9 @@ namespace AWebAPIPractice.Controllers
                 return Ok(companyDto);
             }
         }
+
         [HttpPost]
-        public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+        public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
             if (company == null)
             {
@@ -71,13 +82,15 @@ namespace AWebAPIPractice.Controllers
             var companyEntity = _mapper.Map<Company>(company);
 
             _repositoryManager.CompanyRepository.CreateCompany(companyEntity);
-            _repositoryManager.Save();
+            await _repositoryManager.SaveAsync();
 
             return Created("", "Company Added"); //201
 
         }
+
+
         [HttpPost("collection")]
-        public IActionResult CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
+        public async Task<IActionResult> CreateCompanyCollection([FromBody] IEnumerable<CompanyForCreationDto> companyCollection)
         {
             if (companyCollection == null)
             {
@@ -92,16 +105,16 @@ namespace AWebAPIPractice.Controllers
                 _repositoryManager.CompanyRepository.CreateCompany(company); //insert
             }
 
-            _repositoryManager.Save();
+            await _repositoryManager.SaveAsync();
 
             return Created("", "All Companies Added"); //201
 
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteCompany(int id)
+        public async Task<IActionResult> DeleteCompany(int id)
         {
-            var company = _repositoryManager.CompanyRepository.GetCompany(id, trackChanges: false);
+            var company = await _repositoryManager.CompanyRepository.GetCompanyAsync(id, trackChanges: false);
 
             if (company == null)
             {
@@ -110,13 +123,13 @@ namespace AWebAPIPractice.Controllers
             }
 
             _repositoryManager.CompanyRepository.DeleteCompany(company);
-            _repositoryManager.Save();
+            await _repositoryManager.SaveAsync();
 
             return NoContent();
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCompany(int id, [FromBody] CompanyForUpdateDto companyDto)
+        public async Task<IActionResult> UpdateCompany(int id, [FromBody] CompanyForUpdateDto companyDto)
         {
             if (companyDto == null)
             {
@@ -124,7 +137,7 @@ namespace AWebAPIPractice.Controllers
                 return BadRequest("CompanyForUpdateDto object is null");
             }
 
-            var companyEntity = _repositoryManager.CompanyRepository.GetCompany(id, trackChanges: true);
+            var companyEntity = await _repositoryManager.CompanyRepository.GetCompanyAsync(id, trackChanges: true);
             if (companyEntity == null)
             {
                 _loggerManager.LogInfo($"Company with id: {id} doesn't exist in the database.");
@@ -132,7 +145,7 @@ namespace AWebAPIPractice.Controllers
             }
 
             _mapper.Map(companyDto, companyEntity);
-            _repositoryManager.Save();
+            await _repositoryManager.SaveAsync();
 
             return NoContent();
         }
